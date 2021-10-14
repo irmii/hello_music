@@ -129,8 +129,8 @@ STATIC_URL = '/static/'
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='amqp://rabbitmquser:some_password@rabbitmq:5672')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULE = {
-    'fill_buffer': {
-        'task': 'get_students_info',
+    'task_chain': {
+        'task': 'task_chain',
         'schedule': crontab(hour=9, minute=0),
     },
 }
