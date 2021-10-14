@@ -1,11 +1,11 @@
+# Other requirements
 requests
 python-decouple==3.5
+gunicorn
+whitenoise
 
 # Django
 django
-
-# Django 3.0 async requirements
-gunicorn
 
 # Databases
 psycopg2-binary
