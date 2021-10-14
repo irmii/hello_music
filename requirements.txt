@@ -1,0 +1,19 @@
+requests
+python-decouple==3.5
+
+# Django
+django
+
+# Django 3.0 async requirements
+gunicorn
+
+# Databases
+psycopg2-binary
+dj-database-url
+
+# Distributed tasks
+celery
+redis
+django-celery-beat
+django-celery-results
+django-redis

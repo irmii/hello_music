@@ -3,6 +3,8 @@
 import os
 
 from pathlib import Path
+
+import dj_database_url
 from celery.schedules import crontab
 from decouple import config
 
@@ -15,12 +17,11 @@ LOGS_ROOT = os.path.join(BASE_DIR, 'logs')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-SECRET_KEY = config("SECRET_KEY")
+SECRET_KEY = config('SECRET_KEY', default='hello')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = config('DEBUG', default=False)
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -73,18 +74,21 @@ WSGI_APPLICATION = 'hello_music.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config("POSTGRES_DB"),
-        'USER': config("POSTGRES_USER"),
-        'PASSWORD': config("POSTGRES_PASSWORD"),
-        'HOST': config("POSTGRES_HOST"),
-        'PORT': config("POSTGRES_PORT", cast=int),
-        'OPTIONS': {
-            'options': '-c search_path=hello,public',
-        },
-    },
+    'default': dj_database_url.config(conn_max_age=600, default='sqlite:///db.sqlite3'),
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': config("POSTGRES_DB"),
+#         'USER': config("POSTGRES_USER"),
+#         'PASSWORD': config("POSTGRES_PASSWORD"),
+#         'HOST': config("POSTGRES_HOST"),
+#         'PORT': config("POSTGRES_PORT", cast=int),
+#         'OPTIONS': {
+#             'options': '-c search_path=hello,public',
+#         },
+#     },
+# }
 
 
 # Password validation
