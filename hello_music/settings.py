@@ -77,21 +77,18 @@ WSGI_APPLICATION = 'hello_music.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, default='sqlite:///db.sqlite3'),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config("POSTGRES_DB"),
+        'USER': config("POSTGRES_USER"),
+        'PASSWORD': config("POSTGRES_PASSWORD"),
+        'HOST': config("POSTGRES_HOST"),
+        'PORT': config("POSTGRES_PORT", cast=int),
+        'OPTIONS': {
+            'options': '-c search_path=hello,public',
+        },
+    },
 }
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': config("POSTGRES_DB"),
-#         'USER': config("POSTGRES_USER"),
-#         'PASSWORD': config("POSTGRES_PASSWORD"),
-#         'HOST': config("POSTGRES_HOST"),
-#         'PORT': config("POSTGRES_PORT", cast=int),
-#         'OPTIONS': {
-#             'options': '-c search_path=hello,public',
-#         },
-#     },
-# }
 
 
 # Password validation
