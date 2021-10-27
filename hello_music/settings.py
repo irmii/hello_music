@@ -134,7 +134,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(hour=6, minute=0),
     },
 }
-CELERY_TIMEZONE='Europe/Moscow'
+CELERY_TIMEZONE = 'Europe/Moscow'
 
 SMS_API_KEY = config('SMS_API_KEY', default='1')
 SMS_API_URL = config('SMS_API_URL', default='1')
