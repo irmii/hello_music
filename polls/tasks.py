@@ -4,7 +4,7 @@ from celery import chain
 from django.apps import apps
 
 from hello_music.celery import app
-# from polls.views import send_message
+from polls.views import send_message
 from polls.authentications import get_token, delete_token
 from polls.data_collection.moy_klass import (
     get_user_lessons,
@@ -44,7 +44,7 @@ def task_check_all_active_users(token):
             ]
     ):
         lessons = get_user_lessons(token, student.foreign_id)
-        is_need_to_send_message, is_last_lesson_was_yesterday, passed_lessons = need_to_send_message(lessons)
+        is_need_to_send_message, is_last_lesson_was_yesterday, passed_lessons = need_to_send_message(lessons, token)
         send_message_log_model.objects.create(
             student=student,
             is_message_send=is_need_to_send_message,
@@ -71,7 +71,7 @@ def task_send_message(phone):
     Args:
         phone: телефон пользователя
     """
-    # send_message(phone)
+    send_message(phone)
     logging.info(f'Отправлено сообщение с отзывом {phone}')
 
 
