@@ -4,7 +4,7 @@ from celery import chain
 from django.apps import apps
 
 from hello_music.celery import app
-# from polls.views import send_message
+from polls.views import send_message
 from polls.authentications import get_token, delete_token
 from polls.data_collection.moy_klass import (
     get_user_lessons,
@@ -33,6 +33,7 @@ def task_get_users_and_create_instances(token):
 @app.task(name='task_check_all_active_users')
 def task_check_all_active_users(token):
     student_model = apps.get_model('polls', 'Students')
+    send_message_log_model = apps.get_model('polls', 'SendMessagesLog')
     for student in student_model.objects.filter(
             status_id__in=[
                 '61341',
@@ -43,7 +44,13 @@ def task_check_all_active_users(token):
             ]
     ):
         lessons = get_user_lessons(token, student.foreign_id)
-        is_need_to_send_message, is_last_lesson_was_yesterday, passed_lessons = need_to_send_message(lessons)
+        is_need_to_send_message, is_last_lesson_was_yesterday, passed_lessons = need_to_send_message(lessons, token)
+        send_message_log_model.objects.create(
+            student=student,
+            is_message_send=is_need_to_send_message,
+            lessons_passed=passed_lessons,
+            is_last_lesson_was_yesterday=is_last_lesson_was_yesterday,
+        )
         logging.info(
             f"""У пользователя {student.foreign_id} было {passed_lessons} пройденных занятий
             и последнее было вчера? Да, нет: {is_last_lesson_was_yesterday}""",
@@ -64,7 +71,7 @@ def task_send_message(phone):
     Args:
         phone: телефон пользователя
     """
-    # send_message(phone)
+    send_message(phone)
     logging.info(f'Отправлено сообщение с отзывом {phone}')
 
 

@@ -3,24 +3,25 @@
 import os
 
 from pathlib import Path
+
+import dj_database_url
 from celery.schedules import crontab
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 LOGS_ROOT = os.path.join(BASE_DIR, 'logs')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-SECRET_KEY = config("SECRET_KEY")
+SECRET_KEY = config('SECRET_KEY', default='hello')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = config('DEBUG', default=False)
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -46,9 +47,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'hello_music.urls'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 TEMPLATES = [
     {
@@ -125,11 +129,12 @@ STATIC_URL = '/static/'
 CELERY_BROKER_URL = config('CELERY_BROKER_URL', default='amqp://rabbitmquser:some_password@rabbitmq:5672')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULE = {
-    'fill_buffer': {
-        'task': 'get_students_info',
-        'schedule': crontab(hour=9, minute=0),
+    'task_chain': {
+        'task': 'task_chain',
+        'schedule': crontab(hour=6, minute=0),
     },
 }
+CELERY_TIMEZONE = 'Europe/Moscow'
 
 SMS_API_KEY = config('SMS_API_KEY', default='1')
 SMS_API_URL = config('SMS_API_URL', default='1')
